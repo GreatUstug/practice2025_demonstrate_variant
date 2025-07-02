@@ -2,26 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
-
+use App\Services\PostCreateService;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+    protected $postService;
+
+    public function __construct(PostCreateService $postService)
+    {
+        $this->postService = $postService;
+    }
     public function store(Request $request)
     {
-        try{
-            $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'text' => 'required|string',       
-            ]);
-
-            $post = Post::create($validatedData, );
+        try {
+            $post = $this->postService->createPost($request->all());
             return response()->json(['message' => 'Пост успешно создан!', 'post' => $post], 201);
         } catch (\Throwable $e) {
             return response()->json([
-            'message' => 'Internal server error',
-            'details' => $e->getMessage()
+                'message' => 'Server Error',
+                'details' => $e->getMessage(),
             ], 500);
         }
     }

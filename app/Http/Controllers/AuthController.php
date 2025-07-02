@@ -3,42 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use App\Models\User;
+use App\Services\AuthService;
 
 class AuthController extends Controller
 {
-    use ValidatesRequests;
+
+    protected $authService;
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
 
     public function login(Request $request)
     {
-        try {
-            $this->validate($request, [
-                'email' => 'required|email',
-                'password' => 'required',
-                'device_name' => 'string|max:255',
-            ]);
-
-            $user = User::where('email', $request->input('email'))->first();
-
-            if (!$user || !Hash::check($request->input('password'), $user->password)) {
-                return response()->json([
-                    'message' => 'Invalid data or user does not exist.',
-                ], 404);
-            }
-
-            $token = $user->createToken($request->input('device_name') ?: 'default_device')->plainTextToken;
+        // try {
+            
+            $result = $this->authService->authUser($request->all());
 
             return response()->json([
-                'access_token' => $token,
+                'access_token' => $result['token'],
                 'token_type' => 'Bearer',
-                'user_id' => $user->id,
-            ], 201);
-        } catch (\Throwable $exception) {
-            return response()->json([
-                'message' => 'Error during request processing.',
-            ], 400);
-        }
+                'user_id' => $result['user_id'],
+            ], 200);
+        // }
+        //  catch (\Throwable $exception) {
+        //     return response()->json([
+        //         'message' => 'Error during request processing.',
+        //     ], 400);
+        // }
     }
 }

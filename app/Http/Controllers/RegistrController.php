@@ -3,28 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Services\RegistrService;
 
 class RegistrController extends Controller
 {
+    protected $registrService;
+    public function __construct(RegistrService $registrService)
+    {
+        $this->registrService = $registrService;
+    }
     public function registr(Request $request)
     {
         try{
-            $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|max:255|unique:users',
-            'password' => 'required|string|max:255',       
-            ]);
-
-            $validatedData['password'] = Hash::make($validatedData['password']);
-            
-            $user = User::create($validatedData, );
-
-            $token = $user->createToken($request->input('device_name') ?: 'default_device')->plainTextToken;
-
+            $token = $this->registrService->registrUser($request->all());
             return response()->json(['message' => 'User create successfulle!',
-                                           'user' => $user,
                                            'access_token' => $token,
                                            'token_type' => 'Bearer',
                                             201]);
