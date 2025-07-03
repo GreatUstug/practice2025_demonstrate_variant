@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Validators\UserValidator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthService
 {
@@ -14,10 +15,12 @@ class AuthService
 
         $user = User::where('email', $data['email'])->first();
 
-        // if (!$user || !Hash::check($data['password'], $user->password)) {
-        // throw new \Exception("User does not exists", 404);
-        // }
+        if (!$user || !Hash::check($data['password'], $user->password)) {
+            throw new \Exception("User does not exist");
+        }
+
         $deviceName = $data['device_name'] ?? 'default_device';
+
 
         return [
             'token' => $user->createToken($deviceName)->plainTextToken,

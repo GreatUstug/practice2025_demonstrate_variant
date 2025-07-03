@@ -5,6 +5,8 @@ namespace App\Orchid\Resources;
 use Orchid\Crud\Resource;
 use Orchid\Screen\TD;
 use Orchid\Screen\Fields\Input;
+use Orchid\Screen\Sight;
+use Orchid\Crud\Filters\DefaultSorted;
 
 class PostResource extends Resource
 {
@@ -21,16 +23,16 @@ class PostResource extends Resource
      * @return array
      */
     public function fields(): array
-{
-    return [
-        Input::make('title')
-            ->title('Title')
-            ->placeholder('Enter title here'),
-        Input::make('text')
-            ->title('text')
-            ->placeholder('Enter text here'),
-    ];
-}
+    {
+        return [
+            Input::make('title')
+                ->title('Title')
+                ->placeholder('Enter title here'),
+            Input::make('text')
+                ->title('text')
+                ->placeholder('Enter text here'),
+        ];
+    }
 
 
     /**
@@ -42,10 +44,10 @@ class PostResource extends Resource
     {
         return [
             TD::make('id', 'id'),
-            
+
             TD::make('title', 'title'),
-            
-            TD::make('text','text'),
+
+            TD::make('text', 'text'),
 
             TD::make('created_at', 'Date of creation')
                 ->render(function ($model) {
@@ -66,7 +68,13 @@ class PostResource extends Resource
      */
     public function legend(): array
     {
-        return [];
+        return [
+            Sight::make('id'),
+            Sight::make('title'),
+            Sight::make('text'),
+            Sight::make('created_at'),
+            Sight::make('updated_at'),
+        ];
     }
 
     /**
@@ -76,12 +84,18 @@ class PostResource extends Resource
      */
     public function filters(): array
     {
-        return [];
+        return [
+            new DefaultSorted('id', 'desc'),
+        ];
+    }
+
+    public static function perPage(): int
+    {
+        return 5;
     }
 
     public static function permission(): ?string
-{
-    return 'private-post-resource';
-}
-
+    {
+        return 'private-post-resource';
+    }
 }

@@ -13,7 +13,8 @@ class RegistrService
         UserValidator::validateRegistr($data);
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
-        $token = $user->createToken($data['device_name'])->plainTextToken;
+        $deviceName = $data['device_name'] ?? 'default_device';
+        $token = $user->createToken($deviceName)->plainTextToken;
         return $token;
     }
 }

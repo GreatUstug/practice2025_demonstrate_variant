@@ -16,7 +16,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // try {
+        try {
             
             $result = $this->authService->authUser($request->all());
 
@@ -25,11 +25,12 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
                 'user_id' => $result['user_id'],
             ], 200);
-        // }
-        //  catch (\Throwable $exception) {
-        //     return response()->json([
-        //         'message' => 'Error during request processing.',
-        //     ], 400);
-        // }
+          }
+        catch (\Throwable $e) {
+              return response()->json([
+                  'message' => 'Error during request processing.',
+                  'details' => $e->getMessage()
+              ], 400);
+          }
     }
 }
