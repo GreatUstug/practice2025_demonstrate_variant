@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Auth;
 class Post extends Model
 {
     protected $fillable = [
-        'title', // разрешаем присваивать title
-        'text',  // разрешаем присваивать text
+        'title',
+        'text',
     ];
     
     protected static function booted()
